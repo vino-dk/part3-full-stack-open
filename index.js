@@ -77,23 +77,30 @@ const generateId = () => {
 app.post('/api/persons', (request, response) => {
     const body = request.body
     console.log(body);
-    if(!body.name){
+    if(!body.name || !body.number){
         return response.status(400).json({
             error: "content missing"
         })
+    } 
+
+    const personName = persons.find(p => p.name === body.name) 
+    console.log(body.name);
+    console.log("name of duplicate person", personName);
+
+    if(!personName){
+        const person = {
+            name: body.name,
+            number: body.number,
+            id: generateId()
+        }
+        response.json(persons)
+        persons = persons.concat(person)
+    } else{
+        response.status(400).json({
+            error: "Name already exists in phonebook."
+        })
     }
-
-    const person = {
-        name: body.name,
-        number: body.number,
-        id: generateId()
-    }
-
-    persons = persons.concat(person)
-
-    response.json(persons)
 }) 
-
 
 const PORT = 3001
 app.listen(PORT, () => {

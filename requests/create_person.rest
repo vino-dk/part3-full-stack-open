@@ -2,7 +2,7 @@ POST http://localhost:3001/api/persons
 Content-Type: application/json
 
 {
-    "name": "Jake Gyllenhal",
-    "number": "111-1929281",
+    "name": "Boss Boston",
+    "number": "111-111899",
     "id": 24
 }

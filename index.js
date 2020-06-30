@@ -1,7 +1,10 @@
 const express = require('express')
+const morgan = require('morgan')
+
 const app = express()
 
 app.use(express.json())
+app.use(morgan('tiny'))  // prints :method :url :status :res[content-length] - :response-time ms
 
 let persons = [
     {
@@ -36,12 +39,12 @@ app.get('/api/persons', (request, response) => {
 })
 
 const info = () => {
-    return(
+    return (
         `<div>
             <p> Phonebook has info for ${persons.length} people </p>
             <p> ${new Date()} </p>
         </div>`
-        
+
     )
 }
 
@@ -50,15 +53,15 @@ app.get('/', (request, response) => {
 })
 
 app.get('/api/persons/:id', (request, response) => {
-     const id = Number(request.params.id)
-     const person = persons.find(person => person.id === id)
-     
-     if (person) {
+    const id = Number(request.params.id)
+    const person = persons.find(person => person.id === id)
+
+    if (person) {
         response.json(person)
-     } else {
-         response.status(404).end()
-     }
-     
+    } else {
+        response.status(404).end()
+    }
+
 })
 
 app.delete('/api/persons/:id', (request, response) => {
@@ -69,25 +72,24 @@ app.delete('/api/persons/:id', (request, response) => {
 })
 
 const generateId = () => {
-    const id = Math.floor(Math.random()*1000)
-    console.log(id);
+    const id = Math.floor(Math.random() * 10000)
     return id
 }
 
 app.post('/api/persons', (request, response) => {
     const body = request.body
-    console.log(body);
-    if(!body.name || !body.number){
+    console.log('Body of POST request: ', body);
+    if (!body.name || !body.number) {
         return response.status(400).json({
             error: "content missing"
         })
-    } 
+    }
 
-    const personName = persons.find(p => p.name === body.name) 
-    console.log(body.name);
-    console.log("name of duplicate person", personName);
-
-    if(!personName){
+    const personName = persons.find(p => p.name === body.name)
+    if (personName) {
+        console.log("name of duplicate person", personName);
+    }
+    if (!personName) {
         const person = {
             name: body.name,
             number: body.number,
@@ -95,12 +97,12 @@ app.post('/api/persons', (request, response) => {
         }
         response.json(persons)
         persons = persons.concat(person)
-    } else{
+    } else {
         response.status(400).json({
             error: "Name already exists in phonebook."
         })
     }
-}) 
+})
 
 const PORT = 3001
 app.listen(PORT, () => {
